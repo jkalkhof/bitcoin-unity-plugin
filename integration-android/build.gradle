@@ -4,6 +4,8 @@ dependencies {
     compile('com.google.android:android:4.0.1.2') {
         transitive false
     }
+    compile 'org.bitcoinj:bitcoinj-core:0.12.3'
+    compile files('libs/unity-classes.jar')
 }
 
 sourceSets {
