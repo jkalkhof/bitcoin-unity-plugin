@@ -1,30 +1,32 @@
-using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
 
-public class CoinbaseSDKTest : MonoBehaviour {
-	
-	private bool querying = false;
-	private string label = "";
-	private string status = "playing";
-	private string[] services = new System.String[0];
+using UnityEngine;
+
+public class BitcoinSDKTest : MonoBehaviour {
+
 	private GUIStyle labelStyle = new GUIStyle();
 	public GUISkin mySkin;
-	
+
+	private string transactionNotes = "Sample transaction from bitcoin sdk";
+	private string currencyTypeStr = "BTC - satoshis";
+	private string currencyAmountStr = "12903";
+
+    // today 1 btc = 7750 usd
+	// 1/7550 = 0.00012903
+	// 12903 * 0.00000001 btc/satoshi = 0.00012903
+	// 0.00012903 * $7750/btc = $0.999 
+
+
+	private string sendToWalletAddress = "1GsBUQCNLdphxhuX6aZ7QAJjpnMq8MF6p8"; // jerry's donation wallet address 4
+
 	public string messageLog = "";
 	private Vector2 scrollPosition;	
 
-	private string emailStr = "testuser@gmail.com";
-	private string passwordStr = "";
-	
-	private string transactionNotes = "Sample transaction from unity coinbase sdk";
-	private string currencyTypeStr = "USD";
-	private string currencyAmountStr = "1";
-
-	
-	public string apiKey = "YOUR_API_KEY_FROM_COINBASE";
-	
 	// Use this for initialization
 	void Start () {
+		Debug.Log("BitcoinSDKTest: Start");
+
 		if (mySkin != null) {
 			labelStyle = mySkin.label;
 		}
@@ -32,12 +34,17 @@ public class CoinbaseSDKTest : MonoBehaviour {
 		labelStyle.normal.textColor = Color.white;	
 		
 	}
+
+	void Awake () {
+		Debug.Log("BitcoinSDKTest: Awake");
+	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
 	}
-	
+
+
 	void OnGUI()
 	{
 	 	float centerx = Screen.width / 2;
@@ -50,7 +57,7 @@ public class CoinbaseSDKTest : MonoBehaviour {
 		float buttonVerticalOffset = Screen.height * .002f;		
 		
 		GUI.Label(new Rect(centerx - (buttonWidth/2), buttonVerticalOffset, buttonWidth, buttonHeight), 
-			"Coinbase SDK Game client", labelStyle);
+			"Bitcoin SDK Game Client", labelStyle);
 	
 		
 		
@@ -64,19 +71,19 @@ public class CoinbaseSDKTest : MonoBehaviour {
 		
 		
 		if (GUILayout.Button ("Get Account Balance", GUILayout.Height (buttonHeight))) {
-			StartCoroutine(CoinbaseWebChecker.GetAccountBalance(apiKey));
+			//StartCoroutine(CoinbaseWebChecker.GetAccountBalance(apiKey));
 		}		
 		
 		if (GUILayout.Button ("Get Currencies", GUILayout.Height (buttonHeight))) {
-			StartCoroutine(CoinbaseWebChecker.GetCurrencies());
+			//StartCoroutine(CoinbaseWebChecker.GetCurrencies());
 		}		
 		
 		if (GUILayout.Button ("Get Currencies Exchange Rates", GUILayout.Height (buttonHeight))) {
-			StartCoroutine(CoinbaseWebChecker.GetCurrenciesExchangeRates());
+			//StartCoroutine(CoinbaseWebChecker.GetCurrenciesExchangeRates());
 		}
 		
 		if (GUILayout.Button ("Get Prices Spot Rate", GUILayout.Height (buttonHeight))) {
-			StartCoroutine(CoinbaseWebChecker.GetPricesSpotRate());
+			//StartCoroutine(CoinbaseWebChecker.GetPricesSpotRate());
 		}
 		
 		if (GUILayout.Button ("Get Transactions", GUILayout.Height (buttonHeight))) {
@@ -105,23 +112,23 @@ public class CoinbaseSDKTest : MonoBehaviour {
 		
 		
 		// email label, email texfield
-		GUILayout.BeginHorizontal ();		
-		GUILayout.Label ("email:");
-		emailStr = GUILayout.TextField (emailStr);		
-		GUILayout.EndHorizontal();
-		
-		GUILayout.BeginHorizontal ();		
-		GUILayout.Label ("password:");
-		passwordStr = GUILayout.PasswordField (passwordStr,"*"[0], 25);		
-		GUILayout.EndHorizontal();	
+//		GUILayout.BeginHorizontal ();		
+//		GUILayout.Label ("email:");
+//		emailStr = GUILayout.TextField (emailStr);		
+//		GUILayout.EndHorizontal();
+//		
+//		GUILayout.BeginHorizontal ();		
+//		GUILayout.Label ("password:");
+//		passwordStr = GUILayout.PasswordField (passwordStr,"*"[0], 25);		
+//		GUILayout.EndHorizontal();	
 		
 		
 		if (GUILayout.Button ("Post Users (Signup)", GUILayout.Height (buttonHeight))) {
-			string postUsersJson = CoinbaseWebChecker.dataMgr.CreateJsonPostUsers(emailStr,passwordStr);
-			CoinbaseWebChecker.messageLog += postUsersJson;
-			CoinbaseWebChecker.messageLog += "\n";
-			
-			StartCoroutine(CoinbaseWebChecker.PostUsers(postUsersJson));
+//			string postUsersJson = CoinbaseWebChecker.dataMgr.CreateJsonPostUsers(emailStr,passwordStr);
+//			CoinbaseWebChecker.messageLog += postUsersJson;
+//			CoinbaseWebChecker.messageLog += "\n";
+//			
+//			StartCoroutine(CoinbaseWebChecker.PostUsers(postUsersJson));
 		}		
 		
 		GUILayout.BeginHorizontal ();		
@@ -136,26 +143,34 @@ public class CoinbaseSDKTest : MonoBehaviour {
 		
 		GUILayout.Label ("transaction notes:");
 		transactionNotes = GUILayout.TextArea(transactionNotes, GUILayout.Height (buttonHeight));
+
+		GUILayout.Label ("send btc to wallet address:");
+		sendToWalletAddress = GUILayout.TextArea(sendToWalletAddress, GUILayout.Height (buttonHeight));
 		
 		
 		if (GUILayout.Button ("Post Transactions Request Money", GUILayout.Height (buttonHeight))) {
 			
-			string transactionRequestJson = CoinbaseWebChecker.dataMgr.CreateJsonTransactionRequest(
-				emailStr, currencyTypeStr, currencyAmountStr, transactionNotes);
-			
-			CoinbaseWebChecker.messageLog += transactionRequestJson;
-			CoinbaseWebChecker.messageLog += "\n";
-			
-			StartCoroutine(CoinbaseWebChecker.PostTransactionsRequestMoney(apiKey,transactionRequestJson));			
+//			string transactionRequestJson = CoinbaseWebChecker.dataMgr.CreateJsonTransactionRequest(
+//				emailStr, currencyTypeStr, currencyAmountStr, transactionNotes);
+//			
+//			CoinbaseWebChecker.messageLog += transactionRequestJson;
+//			CoinbaseWebChecker.messageLog += "\n";
+//			
+//			StartCoroutine(CoinbaseWebChecker.PostTransactionsRequestMoney(apiKey,transactionRequestJson));			
+			long amount = long.Parse(currencyAmountStr);
+			BitcoinIntegration.instance.StartRequest(sendToWalletAddress, amount, transactionNotes);
 		}		
 		
 		if (GUILayout.Button ("Verify Transactions (complete)", GUILayout.Height (buttonHeight))) {
 			
-			CoinbaseDataManager.ResponseData response = CoinbaseWebChecker.dataMgr.VerifyTransactionsComplete(emailStr, transactionNotes);
-			
-			CoinbaseWebChecker.messageLog += "Verify Transactions: " + response.success;
-			CoinbaseWebChecker.messageLog += "\n";
-			CoinbaseWebChecker.messageLog += response.message;
+//			CoinbaseDataManager.ResponseData response = CoinbaseWebChecker.dataMgr.VerifyTransactionsComplete(emailStr, transactionNotes);
+//			
+//			CoinbaseWebChecker.messageLog += "Verify Transactions: " + response.success;
+//			CoinbaseWebChecker.messageLog += "\n";
+//			CoinbaseWebChecker.messageLog += response.message;
+
+			long amount = long.Parse(currencyAmountStr);
+			BitcoinIntegration.instance.StartRequest2(sendToWalletAddress, amount, transactionNotes);
 		}		
 		
 		GUILayout.EndArea ();
@@ -188,7 +203,5 @@ public class CoinbaseSDKTest : MonoBehaviour {
 		GUI.EndScrollView();
 		
 	}
-	
-	
 	
 }
