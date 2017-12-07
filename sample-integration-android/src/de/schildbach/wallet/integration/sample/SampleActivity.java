@@ -37,6 +37,9 @@ import android.widget.Toast;
 
 import com.google.protobuf.ByteString;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.schildbach.wallet.integration.android.BitcoinIntegration;
 
 /**
@@ -44,8 +47,10 @@ import de.schildbach.wallet.integration.android.BitcoinIntegration;
  */
 public class SampleActivity extends Activity {
     private static final long AMOUNT = 500000;
-    private static final String[] DONATION_ADDRESSES_MAINNET = { "18CK5k1gajRKKSC7yVSTXT9LUzbheh1XY4",
-            "1PZmMahjbfsTy6DsaRyfStzoWTPppWwDnZ" };
+//    private static final String[] DONATION_ADDRESSES_MAINNET = { "18CK5k1gajRKKSC7yVSTXT9LUzbheh1XY4",
+//            "1PZmMahjbfsTy6DsaRyfStzoWTPppWwDnZ" };
+    private static final String[] DONATION_ADDRESSES_MAINNET = { "1GsBUQCNLdphxhuX6aZ7QAJjpnMq8MF6p8",
+        "1GsBUQCNLdphxhuX6aZ7QAJjpnMq8MF6p8" };
     private static final String[] DONATION_ADDRESSES_TESTNET = { "mkCLjaXncyw8eSWJBcBtnTgviU85z5PfwS",
             "mwEacn7pYszzxfgcNaVUzYvzL6ypRJzB6A" };
     private static final String MEMO = "Sample donation";
@@ -54,9 +59,15 @@ public class SampleActivity extends Activity {
     private Button donateButton, requestButton;
     private TextView donateMessage;
 
+    private static final Logger log = LoggerFactory.getLogger(SampleActivity.class);
+
+    private static BitcoinIntegration btcIntegration = null;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        log.info("onCreate:");
 
         setContentView(R.layout.sample_activity);
 
@@ -75,6 +86,20 @@ public class SampleActivity extends Activity {
         });
 
         donateMessage = (TextView) findViewById(R.id.sample_donate_message);
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        log.info("onStart:");
+
+        //btcIntegration = new BitcoinIntegration(this.getApplicationContext());
+        //btcIntegration = new BitcoinIntegration(this.getBaseContext());
+        btcIntegration = new BitcoinIntegration();
+        btcIntegration.setContext(this.getBaseContext());
     }
 
     private String[] donationAddresses() {
@@ -90,39 +115,60 @@ public class SampleActivity extends Activity {
     }
 
     private void handleRequest() {
-        try {
+//        try {
             final String[] addresses = donationAddresses();
-            final NetworkParameters params = Address.getParametersFromAddress(addresses[0]);
 
-            final Protos.Output.Builder output1 = Protos.Output.newBuilder();
-            output1.setAmount(AMOUNT);
-            output1.setScript(ByteString
-                    .copyFrom(ScriptBuilder.createOutputScript(new Address(params, addresses[0])).getProgram()));
+//            final NetworkParameters params = Address.getParametersFromAddress(addresses[0]);
+//
+//            log.info("handleRequest: addresses[0]: {}", addresses[0]);
+//
+//            final Protos.Output.Builder output1 = Protos.Output.newBuilder();
+//            output1.setAmount(AMOUNT);
+//            output1.setScript(ByteString
+//                    .copyFrom(ScriptBuilder.createOutputScript(new Address(params, addresses[0])).getProgram()));
+//
+//            log.info("handleRequest: addresses[0]: {}", addresses[1]);
+//
+//            final Protos.Output.Builder output2 = Protos.Output.newBuilder();
+//            output2.setAmount(AMOUNT);
+//            output2.setScript(ByteString
+//                    .copyFrom(ScriptBuilder.createOutputScript(new Address(params, addresses[1])).getProgram()));
+//
+//            final Protos.PaymentDetails.Builder paymentDetails = Protos.PaymentDetails.newBuilder();
+//            paymentDetails.setNetwork(params.getPaymentProtocolId());
+//            paymentDetails.addOutputs(output1);
+//            paymentDetails.addOutputs(output2);
+//            paymentDetails.setMemo(MEMO);
+//            paymentDetails.setTime(System.currentTimeMillis());
+//
+//            log.info("handleRequest:MEMO: {}", MEMO);
+//
+//            final Protos.PaymentRequest.Builder paymentRequest = Protos.PaymentRequest.newBuilder();
+//            paymentRequest.setSerializedPaymentDetails(paymentDetails.build().toByteString());
+//
+//            BitcoinIntegration.requestForResult(SampleActivity.this, REQUEST_CODE,
+//                    paymentRequest.build().toByteArray());
 
-            final Protos.Output.Builder output2 = Protos.Output.newBuilder();
-            output2.setAmount(AMOUNT);
-            output2.setScript(ByteString
-                    .copyFrom(ScriptBuilder.createOutputScript(new Address(params, addresses[1])).getProgram()));
+//            BitcoinIntegration.handleRequest(addresses, MEMO);
 
-            final Protos.PaymentDetails.Builder paymentDetails = Protos.PaymentDetails.newBuilder();
-            paymentDetails.setNetwork(params.getPaymentProtocolId());
-            paymentDetails.addOutputs(output1);
-            paymentDetails.addOutputs(output2);
-            paymentDetails.setMemo(MEMO);
-            paymentDetails.setTime(System.currentTimeMillis());
+            if (btcIntegration != null) {
+                //btcIntegration.handleRequest(SampleActivity.this, addresses, AMOUNT, AMOUNT, MEMO);
+                btcIntegration.handleRequest(SampleActivity.this, addresses, AMOUNT, 0, MEMO);
+            } else {
+                log.error("handleRequest: btcIntegration is null!");
+            }
 
-            final Protos.PaymentRequest.Builder paymentRequest = Protos.PaymentRequest.newBuilder();
-            paymentRequest.setSerializedPaymentDetails(paymentDetails.build().toByteString());
-
-            BitcoinIntegration.requestForResult(SampleActivity.this, REQUEST_CODE,
-                    paymentRequest.build().toByteArray());
-        } catch (final AddressFormatException x) {
-            throw new RuntimeException(x);
-        }
+//        } catch (final AddressFormatException x) {
+//        } catch (final Exception x) {
+//            throw new RuntimeException(x);
+//        }
     }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+
+        log.info("onActivityResult: requestCode: {}", Integer.toString(requestCode));
+
         if (requestCode == REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 final String txHash = BitcoinIntegration.transactionHashFromResult(data);
