@@ -44,9 +44,9 @@ import java.util.ArrayList;
 
 /**
  * @author Andreas Schildbach
+ * modified by jkalkhof for unity compatibility
  */
 public final class BitcoinIntegration {
-//public final class BitcoinIntegration extends Activity {
     private static final String INTENT_EXTRA_PAYMENTREQUEST = "paymentrequest";
     private static final String INTENT_EXTRA_PAYMENT = "payment";
     private static final String INTENT_EXTRA_TRANSACTION_HASH = "transaction_hash";
@@ -104,11 +104,6 @@ public final class BitcoinIntegration {
         log.info("The data was {}", data);
     }
 
-    //public void handleRequestUnity(Activity parentActivity, String address0, String address1, String memoStr) {
-    //public void handleRequestUnity(Activity parentActivity, String address0, String address1, long amount0, long amount1, String memoStr) {
-    //public void handleRequestUnity(com.unity3d.player.UnityPlayerActivity parentActivity, String address0, String address1, long amount0, long amount1, String memoStr) {
-    //public void handleRequestUnity(String address0, String address1, long amount0, long amount1, String memoStr) {
-    // java.lang.Long
     public void handleRequestUnity(String address0, String address1, java.lang.Long amount0, java.lang.Long amount1, String memoStr) {
 
         ArrayList<String> arrayList = new ArrayList<String>();
@@ -116,20 +111,12 @@ public final class BitcoinIntegration {
         arrayList.add(address1);
         String [] addresses = arrayList.toArray(new String[arrayList.size()]);
 
-        //java.lang.String.
-        //java.lang.Long.valueOf(1);
-        //android.app.Activity testActivity = new Activity(this.context.getApplicationContext());
-        //testActivity.currentActivity
-
-
         log.info("handleRequestUnity: address0: {}", addresses[0]);
         log.info("handleRequestUnity: address1: {}", addresses[0]);
         log.info("handleRequestUnity: amount0: {}", amount0);
         log.info("handleRequestUnity: amount1: {}", amount1);
         log.info("handleRequestUnity: memoStr: {}", memoStr);
 
-        //handleRequest(parentActivity, addresses, amount0, amount1, memoStr);
-        //handleRequest((Activity) this.context, addresses, amount0, amount1, memoStr);
         handleRequest(this.mActivity, addresses, amount0, amount1, memoStr);
     }
 
@@ -139,29 +126,18 @@ public final class BitcoinIntegration {
         arrayList.add(address1);
         String [] addresses = arrayList.toArray(new String[arrayList.size()]);
 
-        //java.lang.String.
-        //java.lang.Long.valueOf(1);
-        //android.app.Activity testActivity = new Activity(this.context.getApplicationContext());
-        //testActivity.currentActivity
-
-
         log.info("handleRequestUnityStatic: address0: {}", addresses[0]);
         log.info("handleRequestUnityStatic: address1: {}", addresses[1]);
         log.info("handleRequestUnityStatic: amount0: {}", amount0);
         log.info("handleRequestUnityStatic: amount1: {}", amount1);
         log.info("handleRequestUnityStatic: memoStr: {}", memoStr);
 
-        //handleRequest(parentActivity, addresses, amount0, amount1, memoStr);
         handleRequest((Activity) parentActivity, addresses, amount0, amount1, memoStr);
-
     }
 
-    //public void handleRequest(Activity parentActivity, String[] addresses, String memoStr) {
-    //static public void handleRequest(Activity parentActivity, String[] addresses, java.lang.Long amount0, java.lang.Long amount1, String memoStr) {
     static public void handleRequest(Activity parentActivity, String[] addresses, long amount0, long amount1, String memoStr) {
 
         try {
-            //final String[] addresses = DONATION_ADDRESSES_MAINNET;
             final NetworkParameters params = Address.getParametersFromAddress(addresses[0]);
 
             /*
@@ -218,9 +194,6 @@ public final class BitcoinIntegration {
 
             final Protos.PaymentRequest.Builder paymentRequest = Protos.PaymentRequest.newBuilder();
             paymentRequest.setSerializedPaymentDetails(paymentDetails.build().toByteString());
-
-//            BitcoinIntegration.requestForResult(BitcoinIntegration.this, REQUEST_CODE,
-//                    paymentRequest.build().toByteArray());
 
             BitcoinIntegration.requestForResult(parentActivity, REQUEST_CODE,
                     paymentRequest.build().toByteArray());
