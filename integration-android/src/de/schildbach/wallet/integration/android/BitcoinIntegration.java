@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
+import com.unity3d.player.UnityPlayer;
 
 import org.bitcoin.protocols.payments.Protos;
 import org.bitcoinj.core.Address;
@@ -471,14 +472,21 @@ public final class BitcoinIntegration {
                         messageBuilder.append("\n(also a BIP70 payment message was received)");
 
                     log.info("startForResult: {}", messageBuilder);
+
+                    UnityPlayer.UnitySendMessage("BitcoinSvcManager", "RequestResultTransactionHash", txHash);
                 }
+
+                UnityPlayer.UnitySendMessage("BitcoinSvcManager", "RequestResult", "Result ok");
 
                 log.info("startForResult: Thank you!");
             } else if (requestCode == Activity.RESULT_CANCELED) {
-
                 log.info("startForResult: Cancelled.!");
+
+                UnityPlayer.UnitySendMessage("BitcoinSvcManager", "RequestResult", "Cancelled");
             } else {
                 log.info("startForResult: Unknown result.");
+
+                UnityPlayer.UnitySendMessage("BitcoinSvcManager", "RequestResult", "Unknown result");
             }
         }
 
