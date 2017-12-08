@@ -195,9 +195,10 @@ public class BitcoinSDKTest : MonoBehaviour {
 				            //Rect (0, 0, 220, 200)
 				            scrollInnerRect				            
 				            );
-	                           
-		messageLog = CoinbaseWebChecker.messageLog;
-		messageLog = GUI.TextArea (new Rect (0f,0f,Screen.width, Screen.height),
+
+        //messageLog = CoinbaseWebChecker.messageLog;
+        messageLog = BitcoinIntegration.instance.messageLog;
+        messageLog = GUI.TextArea (new Rect (0f,0f,Screen.width, Screen.height),
 							messageLog);
 	
 		GUI.EndScrollView();

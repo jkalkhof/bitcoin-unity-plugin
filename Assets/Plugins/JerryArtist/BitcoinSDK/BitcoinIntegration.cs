@@ -34,6 +34,8 @@ public class BitcoinIntegration : MonoBehaviour {
 
 	private static int debugLevel = 1;
 
+    public string messageLog = "";
+
 	// Use this for initialization
 	void Start () {
 		Debug.Log("BitcoinIntegration: Start");
@@ -47,8 +49,23 @@ public class BitcoinIntegration : MonoBehaviour {
 	void Update () {
 		
 	}
-    
-	public void StartRequest(string sendToWalletAddress, long amount, string transactionNotes) {
+
+    public void RequestResult(string message)
+    {
+        Debug.Log("BitcoinIntegration: RequestResult: " + message);
+
+        messageLog += "RequestResult " + message + "\n";
+    }
+
+    public void RequestResultTransactionHash(string txHash)
+    {
+        Debug.Log("BitcoinIntegration: RequestResultTransactionHash: " + txHash);
+
+        messageLog += "RequestResultTransactionHash " + txHash + "\n";
+    }
+
+
+    public void StartRequest(string sendToWalletAddress, long amount, string transactionNotes) {
 		
 		if (debugLevel > 0) Debug.Log ("BitcoinIntegration: StartRequest: address: " + sendToWalletAddress + " amount: " + amount + " notes: " + transactionNotes);
 
@@ -99,6 +116,8 @@ public class BitcoinIntegration : MonoBehaviour {
 
        	if (Application.platform == RuntimePlatform.Android)
         {
+            messageLog += "start request for " + amount + " satoshis to " + sendToWalletAddress + " (android)\n";
+
             using (var javaUnityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
             {
                 using (var currentActivity = javaUnityPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
@@ -132,10 +151,14 @@ public class BitcoinIntegration : MonoBehaviour {
 
                         androidPlugin.Call("handleRequestUnity", args);
 
-
+                        
                     }
                 }
             }
+        } else
+        {
+
+            messageLog += "start request for " + amount + " satoshis to " + sendToWalletAddress + " (stub) \n";
         }
 		
 		yield break;
