@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+//using BlockchainWebChecker;
 
 public class BitcoinSDKTest : MonoBehaviour {
 
@@ -149,31 +150,21 @@ public class BitcoinSDKTest : MonoBehaviour {
 		
 		
 		if (GUILayout.Button ("Post Transactions Request Money", GUILayout.Height (buttonHeight))) {
-			
-//			string transactionRequestJson = CoinbaseWebChecker.dataMgr.CreateJsonTransactionRequest(
-//				emailStr, currencyTypeStr, currencyAmountStr, transactionNotes);
-//			
-//			CoinbaseWebChecker.messageLog += transactionRequestJson;
-//			CoinbaseWebChecker.messageLog += "\n";
-//			
-//			StartCoroutine(CoinbaseWebChecker.PostTransactionsRequestMoney(apiKey,transactionRequestJson));			
+				
 			long amount = long.Parse(currencyAmountStr);
-			BitcoinIntegration.instance.StartRequest(sendToWalletAddress, amount, transactionNotes);
-		}		
+            //BitcoinIntegration.instance.StartRequest(sendToWalletAddress, amount, transactionNotes);
+            BitcoinIntegration.instance.StartRequest(sendToWalletAddress, amount, transactionNotes, SendRequestCallback);
+
+            //long amount = long.Parse(currencyAmountStr);
+            //BitcoinIntegration.instance.StartRequest2(sendToWalletAddress, amount, transactionNotes);
+        }		
 		
 		if (GUILayout.Button ("Verify Transactions (complete)", GUILayout.Height (buttonHeight))) {
-			
-//			CoinbaseDataManager.ResponseData response = CoinbaseWebChecker.dataMgr.VerifyTransactionsComplete(emailStr, transactionNotes);
-//			
-//			CoinbaseWebChecker.messageLog += "Verify Transactions: " + response.success;
-//			CoinbaseWebChecker.messageLog += "\n";
-//			CoinbaseWebChecker.messageLog += response.message;
+            // StartCoroutine(CoinbaseWebChecker.GetTransactionInfo(BitcoinIntegration.instance.getCurrentTxHash()));
+            StartCoroutine(BlockchainWebChecker.GetTransactionInfo_Coroutine(BitcoinIntegration.instance.getCurrentTxHash(), GetTXHashCallback));
+        }
 
-			long amount = long.Parse(currencyAmountStr);
-			BitcoinIntegration.instance.StartRequest2(sendToWalletAddress, amount, transactionNotes);
-		}		
-		
-		GUILayout.EndArea ();
+        GUILayout.EndArea ();
 		
 		
 		
@@ -196,13 +187,27 @@ public class BitcoinSDKTest : MonoBehaviour {
 				            scrollInnerRect				            
 				            );
 
-        //messageLog = CoinbaseWebChecker.messageLog;
-        messageLog = BitcoinIntegration.instance.messageLog;
+        // use a callback, rather than constantly appending from another class...
+        //messageLog = BitcoinIntegration.instance.messageLog;
         messageLog = GUI.TextArea (new Rect (0f,0f,Screen.width, Screen.height),
 							messageLog);
 	
 		GUI.EndScrollView();
 		
 	}
-	
+
+    public void SendRequestCallback(BitcoinIntegration.ResponseData data)
+    {
+        Debug.Log("BitcoinSDKTest: SendRequestCallback");
+        messageLog += "SendRequestCallback\n";
+        messageLog += data.message;
+    }
+
+    public void GetTXHashCallback(BlockchainWebChecker.ResponseData data)
+    {
+        Debug.Log("BitcoinSDKTest: GetTXHashCallback");
+        messageLog += "GetTXHashCallback\n";
+        messageLog += data.message;
+    }
+
 }

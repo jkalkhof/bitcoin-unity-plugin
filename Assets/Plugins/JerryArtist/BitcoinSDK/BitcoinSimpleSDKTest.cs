@@ -46,7 +46,7 @@ public class BitcoinSimpleSDKTest : MonoBehaviour {
 
 		if (GUILayout.Button ("Start Request", GUILayout.Height (buttonHeight))) {
 			//this.StartCoroutine(BitcoinSimpleSDKTest.StartRequest_Coroutine());
-			BitcoinIntegration.instance.StartRequest(sendToWalletAddress, 1, "simple btc test");
+			BitcoinIntegration.instance.StartRequest(sendToWalletAddress, 1, "simple btc test", null);
 		}
 		
 		GUILayout.EndArea ();

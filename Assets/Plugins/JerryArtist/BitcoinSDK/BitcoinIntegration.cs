@@ -9,6 +9,9 @@ public class BitcoinIntegration : MonoBehaviour {
     private static BitcoinIntegration _instance = null;
     //private Delegate callLoginCallback;
 	
+    // this should really be a json array of string stored in playerprefs, etc.
+    private static string currentTxHash = "";
+
     public static BitcoinIntegration instance
     {
         get
@@ -36,8 +39,20 @@ public class BitcoinIntegration : MonoBehaviour {
 
     public string messageLog = "";
 
-	// Use this for initialization
-	void Start () {
+
+    public delegate void Callback(ResponseData response);
+
+    public class ResponseData
+    {
+        public string message = "";
+        public bool success = false;
+
+    }
+
+    private Callback parentCallback = null;
+
+    // Use this for initialization
+    void Start () {
 		Debug.Log("BitcoinIntegration: Start");
 	}
 	
@@ -50,6 +65,7 @@ public class BitcoinIntegration : MonoBehaviour {
 		
 	}
 
+    // from BitcoinIntegration.java
     public void RequestResult(string message)
     {
         Debug.Log("BitcoinIntegration: RequestResult: " + message);
@@ -57,18 +73,34 @@ public class BitcoinIntegration : MonoBehaviour {
         messageLog += "RequestResult " + message + "\n";
     }
 
+    // from BitcoinIntegration.java
     public void RequestResultTransactionHash(string txHash)
     {
         Debug.Log("BitcoinIntegration: RequestResultTransactionHash: " + txHash);
 
         messageLog += "RequestResultTransactionHash " + txHash + "\n";
+        currentTxHash = txHash;
+
+        if (parentCallback != null)
+        {
+            ResponseData resp = new ResponseData();
+            resp.message = messageLog;
+
+            parentCallback(resp);
+
+        }
     }
 
+    public string getCurrentTxHash()
+    {
+        return currentTxHash;
+    }
 
-    public void StartRequest(string sendToWalletAddress, long amount, string transactionNotes) {
+    public void StartRequest(string sendToWalletAddress, long amount, string transactionNotes, Callback callback) {
 		
 		if (debugLevel > 0) Debug.Log ("BitcoinIntegration: StartRequest: address: " + sendToWalletAddress + " amount: " + amount + " notes: " + transactionNotes);
 
+        parentCallback = callback;
 		this.StartCoroutine(BitcoinIntegration.instance.StartRequest_Coroutine(sendToWalletAddress, amount, transactionNotes));
 
 	}
@@ -113,6 +145,7 @@ public class BitcoinIntegration : MonoBehaviour {
 	public IEnumerator StartRequest_Coroutine(string sendToWalletAddress, long amount, string transactionNotes) 
     {
 		if (debugLevel > 0) Debug.Log ("BitcoinIntegration: StartRequest_Coroutine: " + Application.platform.ToString());
+
 
        	if (Application.platform == RuntimePlatform.Android)
         {
@@ -159,6 +192,9 @@ public class BitcoinIntegration : MonoBehaviour {
         {
 
             messageLog += "start request for " + amount + " satoshis to " + sendToWalletAddress + " (stub) \n";
+
+            RequestResult("Result ok (stub)");
+            RequestResultTransactionHash("10990f1892354ac9f11d634332041f2616e31ceb87fbc9077ac615cdf22c0d51");
         }
 		
 		yield break;

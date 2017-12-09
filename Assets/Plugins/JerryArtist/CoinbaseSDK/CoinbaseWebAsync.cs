@@ -3,7 +3,9 @@ using System.Net;
 using System.Threading;
 using System.Collections;
 using UnityEngine;
- 
+
+using UnityEngine.Networking;
+
 /// <summary>
 ///  The RequestState class passes data across async calls.
 /// </summary>
@@ -313,9 +315,11 @@ public class CoinbaseWebAsync {
 		   		this.resultStr = sr.ReadToEnd().Trim();		
 	 			//Debug.Log ("GetResponse: webResponse: " + this.resultStr);				
 			}
-			
-			
-		}
+
+            // Show results as text
+            // unitywebrequest versus system.net.webrequest
+            //Debug.Log("[WebAsync] " + webRequest.downloadHandler.text);
+        }
 		
 		
 
@@ -331,7 +335,10 @@ public class CoinbaseWebAsync {
  
 		try {
 			requestState.webResponse = webRequest.EndGetResponse(asyncResult);
-		} catch (WebException webException) {
+
+            // never gets here - when using https!!!
+            //Debug.Log("WebAsync: RespCallback: length: " + requestState.webResponse.ContentLength);
+        } catch (WebException webException) {
 			HttpWebResponse response = (HttpWebResponse) webException.Response;
         	Debug.LogError("WebAsync: RespCallback: statusCode: " + response.StatusCode +
 				" statusDescription: " + 
