@@ -11,18 +11,22 @@ public class BitcoinSDKTest : MonoBehaviour {
 
 	private string transactionNotes = "Sample transaction from bitcoin sdk";
 	private string currencyTypeStr = "BTC - satoshis";
-	private string currencyAmountStr = "12903";
+    //private string currencyAmountStr = "12903";
+    private string currencyAmountStr = "300000";
 
     // today 1 btc = 7750 usd
-	// 1/7550 = 0.00012903
-	// 12903 * 0.00000001 btc/satoshi = 0.00012903
-	// 0.00012903 * $7750/btc = $0.999 
+    // 1/7550 = 0.00012903
+    // 12903 * 0.00000001 btc/satoshi = 0.00012903
+    // 0.00012903 * $7750/btc = $0.999 
 
 
-	private string sendToWalletAddress = "1GsBUQCNLdphxhuX6aZ7QAJjpnMq8MF6p8"; // jerry's donation wallet address 4
+    //private string sendToWalletAddress = "1GsBUQCNLdphxhuX6aZ7QAJjpnMq8MF6p8"; // jerry's donation wallet address 4
+    private string sendToWalletAddress = "1C53cU1oqmqwco38ZawdVQqVemaqa7aWQi"; // jerry's mobile wallet address 2
 
-	public string messageLog = "";
-	private Vector2 scrollPosition;	
+    public string messageLog = "";
+	private Vector2 scrollPosition;
+
+    private int debugLevel = 1;
 
 	// Use this for initialization
 	void Start () {
@@ -207,7 +211,24 @@ public class BitcoinSDKTest : MonoBehaviour {
     {
         Debug.Log("BitcoinSDKTest: GetTXHashCallback");
         messageLog += "GetTXHashCallback\n";
-        messageLog += data.message;
+
+        if (debugLevel > 1)
+        {
+            messageLog += data.message;
+        }
+
+        long amount = long.Parse(currencyAmountStr);
+
+        bool verifyTest = BlockchainWebChecker.instance.dataMgr.verifyTransaction(sendToWalletAddress, amount);
+        if (verifyTest)
+        {
+            messageLog += "verified " + amount + "\n";
+        } else
+        {
+            messageLog += "verify failed! \n";
+        }
+
+
     }
 
 }

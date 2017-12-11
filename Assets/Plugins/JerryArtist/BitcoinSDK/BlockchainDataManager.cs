@@ -9,13 +9,99 @@ public class BlockchainDataManager
 
     private static int debugLevel = 1;
 
+    public class TransactionOut
+    {
+        public bool spent = false;
+        public double tx_index = 0; // 309671994,
+        public int type = 0; // ??
+        public string addr = ""; // "1C53cU1oqmqwco38ZawdVQqVemaqa7aWQi",
+        public double value = 0; // in satoshis 300000,
+        public int n = 0; // ??
+        public string script = ""; // "76a914796d3a384751a6bb4e26bb06b49570e17544ea7088ac"
+
+        public void parseFromObj(JSONObject outObj)
+        {
+            if (outObj["spent"] != null)
+            {
+                this.spent = outObj["spent"].AsBool;
+            }
+
+            if (outObj["tx_index"] != null)
+            {
+                this.tx_index = outObj["tx_index"].AsDouble;
+            }
+
+            if (outObj["type"] != null)
+            {
+                this.type = outObj["type"].AsInt;
+            }
+
+            if (outObj["addr"] != null)
+            {
+                this.addr = outObj["addr"].Value;
+            }
+
+            if (outObj["value"] != null)
+            {
+                this.value = outObj["value"].AsDouble;
+            }
+
+            if (outObj["n"] != null)
+            {
+                this.n = outObj["n"].AsInt;
+            }
+
+            if (outObj["script"] != null)
+            {
+                this.script = outObj["script"].Value;
+            }
+        }
+
+        public string printToString()
+        {
+            string tempLog = "";
+
+            tempLog += "\t\t";
+            tempLog += " spent: " + this.spent;
+            tempLog += "\n";
+
+            tempLog += "\t\t";
+            tempLog += " tx_index: " + this.tx_index;
+            tempLog += "\n";
+
+            tempLog += "\t\t";
+            tempLog += " type: " + this.type;
+            tempLog += "\n";
+
+            tempLog += "\t\t";
+            tempLog += " addr: " + this.addr;
+            tempLog += "\n";
+
+            tempLog += "\t\t";
+            tempLog += " value: " + this.value;
+            tempLog += "\n";
+
+            tempLog += "\t\t";
+            tempLog += " n: " + this.n;
+            tempLog += "\n";
+
+            tempLog += "\t\t";
+            tempLog += " script: " + this.script;
+            tempLog += "\n";
+
+            return tempLog;
+        }
+        }
+
     public class Transaction
     {
         public int ver = 0; // 1
         // inputs
         public int weight = 0; // 1028
+        public double block_height = 0; // *** 498239 ** only on verified blocks!
         public string relayed_by = ""; // "0.0.0.0"
         // out 
+        public List<TransactionOut> outTransactions = new List<TransactionOut>();
         public double lock_time = 0; // 498171
         public int size = 0; // 257
         public bool rbf = true;
@@ -40,9 +126,29 @@ public class BlockchainDataManager
                 this.weight = transactionDict["weight"].AsInt;
             }
 
+            // only for verified transactions
+            if (transactionDict["block_height"] != null)
+            {
+                this.block_height = transactionDict["block_height"].AsDouble;
+            }
+
             if (transactionDict["relayed_by"] != null)
             {
                 this.relayed_by = transactionDict["relayed_by"].Value;
+            }
+
+            // out
+            if (transactionDict["out"] != null)
+            {
+                JSONArray outArr = transactionDict["out"].AsArray;
+                for (int i = 0; i<outArr.Count; i++)
+                {
+                    JSONObject outObj = outArr[i].AsObject;
+                    TransactionOut tOut = new TransactionOut();
+
+                    tOut.parseFromObj(outObj);
+                    this.outTransactions.Add(tOut);
+                }
             }
 
             if (transactionDict["lock_time"] != null)
@@ -104,8 +210,24 @@ public class BlockchainDataManager
             tempLog += "\n";
 
             tempLog += "\t";
+            tempLog += " block_height: " + this.block_height;
+            tempLog += "\n";
+
+            tempLog += "\t";
             tempLog += " relayed_by: " + this.relayed_by;
             tempLog += "\n";
+
+            // out
+            for (int i = 0; i < outTransactions.Count; i++)
+            {
+                TransactionOut outT = outTransactions[i];
+
+                tempLog += "\t";
+                tempLog += " out[" + i + "]";
+                tempLog += "\n";
+
+                tempLog += outT.printToString();
+            }
 
             tempLog += "\t";
             tempLog += " lock_time: " + this.lock_time;
@@ -146,6 +268,8 @@ public class BlockchainDataManager
             return tempLog;
         }
     } // Transaction
+
+    private Transaction mTransaction = null;
 
     public string parseGetTransactionInfoResponse(string jsonString)
         {
@@ -216,6 +340,7 @@ public class BlockchainDataManager
 
         Transaction tx = new BlockchainDataManager.Transaction();
         tx.parseFromDict(dict);
+        this.mTransaction = tx;
 
         messageLog += tx.printToString();
         Debug.Log(messageLog);
@@ -223,4 +348,41 @@ public class BlockchainDataManager
         return messageLog;
     }
 
+    public Transaction getTransaction()
+    {
+        return this.mTransaction;
+    }
+
+    public bool verifyTransaction(string verifyWalletAddr, long verifyAmount)
+    {
+        if (debugLevel > 0) Debug.Log("BlockchainDataManager: verifyTransaction: " + verifyWalletAddr + " amount: " + verifyAmount);
+
+        if (this.mTransaction == null)
+        {
+            Debug.LogError("BlockchainDataManager: verifyTransaction: no transaction available!");
+            return false;
+        }
+
+        long totalSatoshis = 0;
+        for (int i = 0; i < mTransaction.outTransactions.Count; i++)
+        {
+            TransactionOut tOut = mTransaction.outTransactions[i];
+            if (tOut.addr.CompareTo(verifyWalletAddr) == 0)
+            {
+                if (debugLevel > 0) Debug.Log("BlockchainDataManager: verifyTransaction: address match: amount: " + tOut.value);
+                totalSatoshis += (long) tOut.value;
+            }
+
+        }
+
+        if (debugLevel > 0) Debug.Log("BlockchainDataManager: verifyTransaction: amountToVerify: " + verifyAmount + " verified: " + totalSatoshis);
+
+        if (totalSatoshis == verifyAmount)
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
 }

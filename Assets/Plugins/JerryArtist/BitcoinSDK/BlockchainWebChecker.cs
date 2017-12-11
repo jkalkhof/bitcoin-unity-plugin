@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class BlockchainWebChecker : MonoBehaviour {
 
-    static public BlockchainWebChecker Instance;
+
     static int debugLevel = 1;
-    static public BlockchainDataManager dataMgr = null;
+    public BlockchainDataManager dataMgr = null;
 
     static public string messageLog = "";
 
@@ -23,6 +23,32 @@ public class BlockchainWebChecker : MonoBehaviour {
 
     }
 
+    #region Singleton
+    private static BlockchainWebChecker _instance = null;
+
+    public static BlockchainWebChecker instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = GameObject.FindObjectOfType<BlockchainWebChecker>();
+                if (_instance == null)
+                {
+                    Debug.LogError("<color=red>BlockchainWebChecker Not Found!</color>");
+                }
+            }
+            return _instance;
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        _instance = null;
+        DestroyImmediate(gameObject);
+    }
+    #endregion
+
     // Use this for initialization
     void Start () {
 		
@@ -35,7 +61,7 @@ public class BlockchainWebChecker : MonoBehaviour {
 
     void Awake()
     {
-        Instance = GetComponent<BlockchainWebChecker>();
+        
         dataMgr = new BlockchainDataManager();
 
     }
@@ -53,7 +79,7 @@ public class BlockchainWebChecker : MonoBehaviour {
         if (debugLevel > 0) Debug.Log("BlockchainWebChecker: URL: " + checkThisURL);
 
         //yield return Instance.StartCoroutine( webAsync.CheckForMissingURL(checkThisURL) );
-        yield return Instance.StartCoroutine(webAsync.GetURL(checkThisURL));
+        yield return instance.StartCoroutine(webAsync.GetURL(checkThisURL));
 
 
         //Debug.Log("Does "+ checkThisURL  +" exist? "+ webAsync.isURLmissing);
@@ -61,10 +87,10 @@ public class BlockchainWebChecker : MonoBehaviour {
         {
             if (debugLevel > 0) Debug.Log("Coroutine : response: " + webAsync.resultStr);
 
-            while (dataMgr == null) yield return null;
+            while (instance.dataMgr == null) yield return null;
 
 
-            response.message = dataMgr.parseGetTransactionInfoResponse(webAsync.resultStr);
+            response.message = instance.dataMgr.parseGetTransactionInfoResponse(webAsync.resultStr);
             response.success = true;
 
             messageLog = ""; // reset the message log			
