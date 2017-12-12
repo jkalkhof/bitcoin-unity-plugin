@@ -29,6 +29,9 @@ public class BitcoinSDKTest : MonoBehaviour
     //private string sendToWalletAddress = "1GsBUQCNLdphxhuX6aZ7QAJjpnMq8MF6p8"; // jerry's donation wallet address 4
     private string sendToWalletAddress = "1C53cU1oqmqwco38ZawdVQqVemaqa7aWQi"; // jerry's mobile wallet address 2
 
+    private string transactionHashStr = "10990f1892354ac9f11d634332041f2616e31ceb87fbc9077ac615cdf22c0d51"; // test transaction
+    //private string transactionHashStr = "";
+
     public string messageLog = "";
     private Vector2 scrollPosition;
 
@@ -76,45 +79,28 @@ public class BitcoinSDKTest : MonoBehaviour
 
 
 
-        GUILayout.BeginArea(new Rect(
-            (centerx * 0.5f) - (buttonWidth / 2), // left collumn
-                                                  //centerx - (buttonWidth/2), // centered button horizontally
-            buttonVerticalOffset + (buttonSpacer * 1),
-            buttonWidth, buttonHeight * 12));
+        //GUILayout.BeginArea(new Rect(
+        //    (centerx * 0.5f) - (buttonWidth / 2),
+        //    buttonVerticalOffset + (buttonSpacer * 1),
+        //    buttonWidth, buttonHeight * 12));
 
-        if (GUILayout.Button("Get Account Balance", GUILayout.Height(buttonHeight)))
-        {
-            //StartCoroutine(CoinbaseWebChecker.GetAccountBalance(apiKey));
-        }
+        GUILayout.BeginArea(new Rect(
+            Screen.width * ((1f - .7f) / 2f),
+            buttonVerticalOffset + (buttonSpacer * 1),
+            buttonWidth * 2, buttonHeight * 12));
 
         if (GUILayout.Button("Get Exchange Rates", GUILayout.Height(buttonHeight)))
         {
             BlockchainWebChecker.instance.GetExchangeRates(GetExchangeRatesCallback);
         }
 
-        if (GUILayout.Button("Get Transactions", GUILayout.Height(buttonHeight)))
-        {
-            //StartCoroutine(CoinbaseWebChecker.GetTransactions(apiKey));
-        }
 
-        if (GUILayout.Button("Get Transactions (Requests)", GUILayout.Height(buttonHeight)))
-        {
-            //CoinbaseWebChecker.messageLog += CoinbaseWebChecker.dataMgr.GetTransactionsRequests();			
-        }
+        //GUILayout.EndArea();
 
-        if (GUILayout.Button("Delete Transactions (Cancel Requests)", GUILayout.Height(buttonHeight)))
-        {
-            //StartCoroutine(CoinbaseWebChecker.DeleteTransactionsCancelRequests(apiKey));		
-        }
-
-        GUILayout.EndArea();
-
-
-        GUILayout.BeginArea(new Rect(
-            (Screen.width * 0.75f) - (buttonWidth / 2), // right collumn
-                                                        //centerx - (buttonWidth/2), // centered button horizontally
-            buttonVerticalOffset + (buttonSpacer * 1),
-            buttonWidth, buttonHeight * 12));
+        //GUILayout.BeginArea(new Rect(
+        //    (Screen.width * 0.75f) - (buttonWidth / 2), 
+        //    buttonVerticalOffset + (buttonSpacer * 1),
+        //    buttonWidth, buttonHeight * 12));
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("source currency:");
@@ -156,10 +142,17 @@ public class BitcoinSDKTest : MonoBehaviour
             //BitcoinIntegration.instance.StartRequest2(sendToWalletAddress, amount, transactionNotes);
         }
 
+
+        GUILayout.Label("transaction hash (receipt):");
+        transactionHashStr = GUILayout.TextArea(transactionHashStr, GUILayout.Height(buttonHeight));
+
+
         if (GUILayout.Button("Verify Transactions (complete)", GUILayout.Height(buttonHeight)))
         {
-            // StartCoroutine(CoinbaseWebChecker.GetTransactionInfo(BitcoinIntegration.instance.getCurrentTxHash()));
-            StartCoroutine(BlockchainWebChecker.GetTransactionInfo_Coroutine(BitcoinIntegration.instance.getCurrentTxHash(), GetTXHashCallback));
+           
+            //StartCoroutine(BlockchainWebChecker.GetTransactionInfo_Coroutine(BitcoinIntegration.instance.getCurrentTxHash(), GetTXHashCallback));
+            StartCoroutine(BlockchainWebChecker.GetTransactionInfo_Coroutine(transactionHashStr, GetTXHashCallback));
+
         }
 
         GUILayout.EndArea();
@@ -190,13 +183,17 @@ public class BitcoinSDKTest : MonoBehaviour
 
     }
 
+    // request btc transfer
     public void SendRequestCallback(BitcoinIntegration.ResponseData data)
     {
         Debug.Log("BitcoinSDKTest: SendRequestCallback");
         messageLog += "SendRequestCallback\n";
         messageLog += data.message;
+
+        transactionHashStr = BitcoinIntegration.instance.getCurrentTxHash();
     }
 
+    // verify
     public void GetTXHashCallback(BlockchainWebChecker.ResponseData data)
     {
         Debug.Log("BitcoinSDKTest: GetTXHashCallback");
