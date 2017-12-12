@@ -812,6 +812,7 @@ namespace SimpleJSON
     }
     // End of JSONArray
 
+
     public partial class JSONObject : JSONNode
     {
         private Dictionary<string, JSONNode> m_Dict = new Dictionary<string, JSONNode>();
@@ -828,6 +829,15 @@ namespace SimpleJSON
 
         public override Enumerator GetEnumerator() { return new Enumerator(m_Dict.GetEnumerator()); }
 
+        // https://stackoverflow.com/questions/29879824/how-to-iterate-over-a-json-object-and-get-properties
+        public Dictionary<string, JSONNode>.KeyCollection keys
+        {
+            get
+            {
+                return m_Dict.Keys;
+            }
+        }
+        
 
         public override JSONNode this[string aKey]
         {
@@ -957,6 +967,7 @@ namespace SimpleJSON
             aSB.Append('}');
         }
 
+        
     }
     // End of JSONObject
 

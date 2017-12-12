@@ -269,10 +269,142 @@ public class BlockchainDataManager
         }
     } // Transaction
 
+    public class ExchangeRate
+    {
+        public string currency = "";  // USD, etc.
+        public float fifteen_min = 0.0f;
+        public float last = 0.0f;
+        public float buy = 0.0f;
+        public float sell = 0.0f;
+        public string symbol = "";
+
+        public void parseFromDict(JSONNode transactionDict)
+        {
+            if (transactionDict["15m"] != null)
+            {
+                this.fifteen_min = transactionDict["15m"].AsFloat;
+            }
+
+            if (transactionDict["last"] != null)
+            {
+                this.last = transactionDict["last"].AsFloat;
+            }
+
+            if (transactionDict["buy"] != null)
+            {
+                this.buy = transactionDict["buy"].AsFloat;
+            }
+
+            if (transactionDict["sell"] != null)
+            {
+                this.sell = transactionDict["sell"].AsFloat;
+            }
+
+            if (transactionDict["symbol"] != null)
+            {
+                this.symbol = transactionDict["symbol"].Value;
+            }
+
+        }
+
+        public string printToString()
+        {
+            string tempLog = "";
+
+            tempLog += "currency: " + this.currency;
+            tempLog += "\n";
+
+            tempLog += "\t";
+            tempLog += " 15m: " + this.fifteen_min;
+            tempLog += "\n";
+
+            tempLog += "\t";
+            tempLog += " last: " + this.last;
+            tempLog += "\n";
+
+            tempLog += "\t";
+            tempLog += " buy: " + this.buy;
+            tempLog += "\n";
+
+            tempLog += "\t";
+            tempLog += " sell: " + this.sell;
+            tempLog += "\n";
+
+            tempLog += "\t";
+            tempLog += " symbol: " + this.symbol;
+            tempLog += "\n";
+
+            return tempLog;
+        }
+
+    }
+
+    public static string sourceCurrency = "USD";
+
     private Transaction mTransaction = null;
 
-    public string parseGetTransactionInfoResponse(string jsonString)
+    private Dictionary<string, ExchangeRate> mExchangeRates = new Dictionary<string, ExchangeRate>();
+
+    public string parseGetExchangeRates(string jsonString)
+    {
+        if ((jsonString == null) || (jsonString.Length == 0))
         {
+            string errorStr = "parseGetExchangeRates: invalid jsonString!\n";
+            Debug.Log(errorStr);
+            return errorStr;
+        }
+
+        string messageLog = "";
+
+        /*
+            {
+                "USD" : {"15m" : 16711.22, "last" : 16711.22, "buy" : 16716.82, "sell" : 16705.62, "symbol" : "$"},
+                ...
+            }
+         */
+
+        JSONNode dict = JSON.Parse(jsonString);
+        foreach (string k in dict.Keys)
+        {
+            if (debugLevel > 1) Debug.Log("key: " + k + " => value: " + dict[k]);
+            ExchangeRate exch = new ExchangeRate();
+            exch.currency = k;
+            exch.parseFromDict(dict[k]);
+
+            if (mExchangeRates.ContainsKey(exch.currency)) {
+                // replace old value
+                mExchangeRates[exch.currency] = exch;
+            } else
+            {
+                mExchangeRates[exch.currency] = exch;
+            }
+
+            messageLog += exch.printToString();
+
+        }
+
+        return messageLog;
+    }
+
+    public float convertCurrencyToBtc(float sourceAmt, string sourceCurrency)
+    {
+        if (!mExchangeRates.ContainsKey(sourceCurrency))
+        {
+            Debug.LogWarning("BlockchainDataManager: no conversion rate exists!");
+            return 0.0f;
+        }
+
+        float targetAmt = 0.0f;
+        targetAmt = sourceAmt / mExchangeRates[sourceCurrency].last;
+
+        if (debugLevel > 0) Debug.Log("BlockchainDataManager: convertCurrencyToBtc: " + sourceAmt + " " + sourceCurrency + " => " + targetAmt + " btc");
+
+        return targetAmt;
+
+    }
+
+    public string parseGetTransactionInfoResponse(string jsonString)
+    {
         if ((jsonString == null) || (jsonString.Length == 0))
         {
             string errorStr = "parseGetAccountBalanceResponse: invalid jsonString!\n";

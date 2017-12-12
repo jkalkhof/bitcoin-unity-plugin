@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockchainWebChecker : MonoBehaviour {
+public class BlockchainWebChecker : MonoBehaviour
+{
 
 
     static int debugLevel = 1;
@@ -50,18 +51,20 @@ public class BlockchainWebChecker : MonoBehaviour {
     #endregion
 
     // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     void Awake()
     {
-        
+
         dataMgr = new BlockchainDataManager();
 
     }
@@ -110,4 +113,58 @@ public class BlockchainWebChecker : MonoBehaviour {
             callback(response);
         }
     }
+
+    public void GetExchangeRates(Callback callback)
+    {
+        StartCoroutine(GetExchangeRates_Coroutine(callback));
+    }
+
+
+
+    static public IEnumerator GetExchangeRates_Coroutine(Callback callback)
+    {
+        ResponseData response = new ResponseData();
+
+        if (debugLevel > 0) Debug.Log("BlockchainWebChecker: GetExchangeRates: start");
+
+        string checkThisURL = serverApiUrl + "ticker";
+        CoinbaseWebAsync webAsync = new CoinbaseWebAsync();
+
+        if (debugLevel > 0) Debug.Log("BlockchainWebChecker: URL: " + checkThisURL);
+
+        //yield return Instance.StartCoroutine( webAsync.CheckForMissingURL(checkThisURL) );
+        yield return instance.StartCoroutine(webAsync.GetURL(checkThisURL));
+
+
+        //Debug.Log("Does "+ checkThisURL  +" exist? "+ webAsync.isURLmissing);
+        if (webAsync.isResponseCompleted)
+        {
+            if (debugLevel > 0) Debug.Log("Coroutine : response: " + webAsync.resultStr);
+
+            while (instance.dataMgr == null) yield return null;
+
+
+            //response.message = instance.dataMgr.parseGetTransactionInfoResponse(webAsync.resultStr);
+            response.message = instance.dataMgr.parseGetExchangeRates(webAsync.resultStr);
+            response.success = true;
+
+            messageLog = ""; // reset the message log			
+            messageLog += response.message;
+            messageLog += "\n";
+
+        }
+        else
+        {
+            Debug.Log("Coroutine : response not completed: ");
+        }
+
+        if (debugLevel > 0) Debug.Log("Coroutine GetExchangeRates: finish");
+
+        if (callback != null)
+        {
+            callback(response);
+        }
+
+    }
+
 }
