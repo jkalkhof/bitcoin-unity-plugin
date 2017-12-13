@@ -485,6 +485,8 @@ public class BlockchainDataManager
         return this.mTransaction;
     }
 
+
+
     public bool verifyTransaction(string verifyWalletAddr, long verifyAmount)
     {
         if (debugLevel > 0) Debug.Log("BlockchainDataManager: verifyTransaction: " + verifyWalletAddr + " amount: " + verifyAmount);

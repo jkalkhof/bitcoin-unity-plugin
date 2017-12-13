@@ -158,7 +158,8 @@ public class BitcoinIntegration : MonoBehaviour {
 					using (var androidPlugin = new AndroidJavaObject("de.schildbach.wallet.integration.android.BitcoinIntegration", currentActivity))                          
                     {
 						AndroidJavaObject address0 = new AndroidJavaObject("java.lang.String", sendToWalletAddress);
-                        AndroidJavaObject address1 = new AndroidJavaObject("java.lang.String", sendToWalletAddress);
+                        //AndroidJavaObject address1 = new AndroidJavaObject("java.lang.String", sendToWalletAddress);
+                        AndroidJavaObject address1 = new AndroidJavaObject("java.lang.String", ""); // blank address as 2nd - so we don't create a complex address
 
                         // org.bitcoinj.core.AddressFormatException: Input too short
                         //AndroidJavaObject address1 = new AndroidJavaObject("java.lang.String", "");
