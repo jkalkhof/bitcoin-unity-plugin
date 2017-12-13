@@ -148,6 +148,7 @@ public class BitcoinSDKGui : MonoBehaviour {
             messageLog += data.message;
         }
 
+        currencyAmountStr = InputField_TargetAmount.GetComponentInChildren<InputField>().text;
         long amount = long.Parse(currencyAmountStr);
 
         bool verifyTest = BlockchainWebChecker.instance.dataMgr.verifyTransaction(sendToWalletAddress, amount);
