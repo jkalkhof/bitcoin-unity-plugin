@@ -3,12 +3,11 @@ apply plugin: 'com.android.application'
 dependencies {
     //compile project(':unity-android')
     compile project(':integration-android')
+    compile files('libs/unity-classes.jar')
     compile 'org.bitcoinj:bitcoinj-core:0.12.3'
     compile 'org.slf4j:slf4j-api:1.7.22'
     compile 'org.slf4j:slf4j-jdk14:1.7.22'
-
     compile 'com.madgag.spongycastle:core:1.51.0.0'
-
     //compile 'unity-classes.jar'
 }
 

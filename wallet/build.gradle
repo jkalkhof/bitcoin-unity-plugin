@@ -45,12 +45,16 @@ android {
 
     defaultConfig {
         generatedDensities = ['hdpi', 'xhdpi']
+
+        // Enabling multidex support.
+        multiDexEnabled true
     }
 
     buildTypes {
         all {
-            minifyEnabled true
-            proguardFile 'proguard.cfg'
+            //minifyEnabled true
+            //minifyEnabled false
+            //proguardFile 'proguard.cfg'
         }
         debug {
             debuggable true
