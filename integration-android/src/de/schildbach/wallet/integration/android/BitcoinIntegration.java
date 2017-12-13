@@ -159,13 +159,16 @@ public final class BitcoinIntegration {
             log.info("handleRequest: amount0: {}", amount0);
             log.info("handleRequest: addresses[0]: {}", addresses[0]);
 
-            final Protos.Output.Builder output2 = Protos.Output.newBuilder();
-            output2.setAmount(amount1);
-            output2.setScript(ByteString
-                    .copyFrom(ScriptBuilder.createOutputScript(new Address(params, addresses[1])).getProgram()));
 
-            log.info("handleRequest: amount1: {}", amount1);
-            log.info("handleRequest: addresses[1]: {}", addresses[1]);
+            final Protos.Output.Builder output2 = Protos.Output.newBuilder();
+            if ((addresses[1] != null) && (addresses[1].length() != 0)) {
+                output2.setAmount(amount1);
+                output2.setScript(ByteString
+                        .copyFrom(ScriptBuilder.createOutputScript(new Address(params, addresses[1])).getProgram()));
+
+                log.info("handleRequest: amount1: {}", amount1);
+                log.info("handleRequest: addresses[1]: {}", addresses[1]);
+            }
 
             /*
                 from BIP70
@@ -187,7 +190,9 @@ public final class BitcoinIntegration {
             final Protos.PaymentDetails.Builder paymentDetails = Protos.PaymentDetails.newBuilder();
             paymentDetails.setNetwork(params.getPaymentProtocolId());
             paymentDetails.addOutputs(output1);
-            paymentDetails.addOutputs(output2);
+            if ((addresses[1] != null) && (addresses[1].length() != 0)) {
+                paymentDetails.addOutputs(output2);
+            }
             paymentDetails.setMemo(memoStr);
             paymentDetails.setTime(System.currentTimeMillis());
 

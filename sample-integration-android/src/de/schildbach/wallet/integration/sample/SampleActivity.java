@@ -50,7 +50,7 @@ public class SampleActivity extends Activity {
 //    private static final String[] DONATION_ADDRESSES_MAINNET = { "18CK5k1gajRKKSC7yVSTXT9LUzbheh1XY4",
 //            "1PZmMahjbfsTy6DsaRyfStzoWTPppWwDnZ" };
     private static final String[] DONATION_ADDRESSES_MAINNET = { "1GsBUQCNLdphxhuX6aZ7QAJjpnMq8MF6p8",
-        "1GsBUQCNLdphxhuX6aZ7QAJjpnMq8MF6p8" };
+        "" };
     private static final String[] DONATION_ADDRESSES_TESTNET = { "mkCLjaXncyw8eSWJBcBtnTgviU85z5PfwS",
             "mwEacn7pYszzxfgcNaVUzYvzL6ypRJzB6A" };
     private static final String MEMO = "Sample donation";
@@ -117,39 +117,6 @@ public class SampleActivity extends Activity {
     private void handleRequest() {
 //        try {
             final String[] addresses = donationAddresses();
-
-//            final NetworkParameters params = Address.getParametersFromAddress(addresses[0]);
-//
-//            log.info("handleRequest: addresses[0]: {}", addresses[0]);
-//
-//            final Protos.Output.Builder output1 = Protos.Output.newBuilder();
-//            output1.setAmount(AMOUNT);
-//            output1.setScript(ByteString
-//                    .copyFrom(ScriptBuilder.createOutputScript(new Address(params, addresses[0])).getProgram()));
-//
-//            log.info("handleRequest: addresses[0]: {}", addresses[1]);
-//
-//            final Protos.Output.Builder output2 = Protos.Output.newBuilder();
-//            output2.setAmount(AMOUNT);
-//            output2.setScript(ByteString
-//                    .copyFrom(ScriptBuilder.createOutputScript(new Address(params, addresses[1])).getProgram()));
-//
-//            final Protos.PaymentDetails.Builder paymentDetails = Protos.PaymentDetails.newBuilder();
-//            paymentDetails.setNetwork(params.getPaymentProtocolId());
-//            paymentDetails.addOutputs(output1);
-//            paymentDetails.addOutputs(output2);
-//            paymentDetails.setMemo(MEMO);
-//            paymentDetails.setTime(System.currentTimeMillis());
-//
-//            log.info("handleRequest:MEMO: {}", MEMO);
-//
-//            final Protos.PaymentRequest.Builder paymentRequest = Protos.PaymentRequest.newBuilder();
-//            paymentRequest.setSerializedPaymentDetails(paymentDetails.build().toByteString());
-//
-//            BitcoinIntegration.requestForResult(SampleActivity.this, REQUEST_CODE,
-//                    paymentRequest.build().toByteArray());
-
-//            BitcoinIntegration.handleRequest(addresses, MEMO);
 
             if (btcIntegration != null) {
                 //btcIntegration.handleRequest(SampleActivity.this, addresses, AMOUNT, AMOUNT, MEMO);
