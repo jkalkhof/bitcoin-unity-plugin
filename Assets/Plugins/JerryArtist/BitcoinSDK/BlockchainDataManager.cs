@@ -511,7 +511,7 @@ public class BlockchainDataManager
 
         if (debugLevel > 0) Debug.Log("BlockchainDataManager: verifyTransaction: amountToVerify: " + verifyAmount + " verified: " + totalSatoshis);
 
-        if (totalSatoshis == verifyAmount)
+        if (totalSatoshis >= verifyAmount)
         {
             return true;
         } else

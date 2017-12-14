@@ -11,6 +11,10 @@ public class BitcoinSDKSimpleGui : MonoBehaviour {
 
     public GameObject LoggingText;
 
+    public Texture lockTexture;
+    public Texture unlockTexture;
+    public GameObject RawImage_Lock1;
+
     private string transactionNotes = "Sample transaction from bitcoin sdk";
     private string currencyTypeStr = "BTC - satoshis";
     //private string currencyAmountStr = "12903";
@@ -129,10 +133,12 @@ public class BitcoinSDKSimpleGui : MonoBehaviour {
         if (verifyTest)
         {
             messageLog += "verified " + amount + "\n";
+            RawImage_Lock1.GetComponentInChildren<RawImage>().texture = unlockTexture;
         }
         else
         {
             messageLog += "verify failed! \n";
+            RawImage_Lock1.GetComponentInChildren<RawImage>().texture = lockTexture;
         }
 
         LoggingText.GetComponent<Text>().text = messageLog;
