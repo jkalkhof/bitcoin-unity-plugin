@@ -15,7 +15,6 @@ public class BitcoinSDKSimpleGui : MonoBehaviour {
     public Texture lockTexture;
     public Texture unlockTexture;
     
-
     [System.Serializable]
     public class BitcoinPurchaseObjectGroup
     {
@@ -179,6 +178,12 @@ public class BitcoinSDKSimpleGui : MonoBehaviour {
             objectGroups[currentBtcAsset].RawImage_Lock1.GetComponentInChildren<RawImage>().texture = lockTexture;
         }
 
+        LoggingText.GetComponent<Text>().text = messageLog;
+    }
+
+    public void clearLog()
+    {
+        messageLog = "";
         LoggingText.GetComponent<Text>().text = messageLog;
     }
 }
