@@ -21,7 +21,7 @@
 
     <application android:label="Bitcoin in-app payment sample" >
         <activity
-            android:name="de.schildbach.wallet.integration.sample.SampleActivity"
+            android:name="de.schildbach.wallet.integration.sample.com.jerryartist.bitcoin.sample.SampleActivity"
             android:theme="@android:style/Theme.Light" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
