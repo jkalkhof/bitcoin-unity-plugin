@@ -1,0 +1,38 @@
+apply plugin: 'com.android.application'
+
+dependencies {
+    //compile project(':unity-android')
+    compile project(':integration-android')
+    compile files('libs/unity-classes.jar')
+    compile 'org.bitcoinj:bitcoinj-core:0.12.3'
+    compile 'org.slf4j:slf4j-api:1.7.22'
+    compile 'org.slf4j:slf4j-jdk14:1.7.22'
+    compile 'com.madgag.spongycastle:core:1.51.0.0'
+    //compile 'unity-classes.jar'
+}
+
+android {
+    compileSdkVersion 'android-15'
+    buildToolsVersion '26.0.1'
+
+    lintOptions { abortOnError false }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+        }
+    }
+
+    packagingOptions {
+        exclude 'lib/x86_64/darwin/libscrypt.dylib'
+        exclude 'lib/x86_64/freebsd/libscrypt.so'
+        exclude 'lib/x86_64/linux/libscrypt.so'
+        exclude 'com/google/thirdparty/publicsuffix/PublicSuffixPatterns.gwt.xml'
+        exclude 'com/google/thirdparty/publicsuffix/PublicSuffixType.gwt.xml'
+        exclude 'org/bitcoinj/crypto/mnemonic/wordlist/english.txt'
+        exclude 'org/bitcoinj/crypto/cacerts'
+    }
+}
