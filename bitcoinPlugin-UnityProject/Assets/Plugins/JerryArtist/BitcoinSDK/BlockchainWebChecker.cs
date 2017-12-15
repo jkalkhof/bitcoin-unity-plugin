@@ -77,7 +77,7 @@ public class BlockchainWebChecker : MonoBehaviour
         bool foundURL;
 
         string checkThisURL = serverApiUrl + "rawtx/" + txHash;
-        CoinbaseWebAsync webAsync = new CoinbaseWebAsync();
+        BitcoinWebAsync webAsync = new BitcoinWebAsync();
 
         if (debugLevel > 0) Debug.Log("BlockchainWebChecker: URL: " + checkThisURL);
 
@@ -128,7 +128,7 @@ public class BlockchainWebChecker : MonoBehaviour
         if (debugLevel > 0) Debug.Log("BlockchainWebChecker: GetExchangeRates: start");
 
         string checkThisURL = serverApiUrl + "ticker";
-        CoinbaseWebAsync webAsync = new CoinbaseWebAsync();
+        BitcoinWebAsync webAsync = new BitcoinWebAsync();
 
         if (debugLevel > 0) Debug.Log("BlockchainWebChecker: URL: " + checkThisURL);
 

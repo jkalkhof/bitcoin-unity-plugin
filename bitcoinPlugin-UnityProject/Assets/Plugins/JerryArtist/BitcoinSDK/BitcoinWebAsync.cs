@@ -26,7 +26,7 @@ public class RequestState
 /// <summary>
 /// Simplify getting web requests asynchronously
 /// </summary>
-public class CoinbaseWebAsync {
+public class BitcoinWebAsync {
 	private int debugLevel = 1;
 	const int TIMEOUT = 10; // seconds
  

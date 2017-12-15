@@ -49,7 +49,7 @@ public class BitcoinSDKSimpleGui : MonoBehaviour {
             sourceCurrencyTypeStr = "USD",
             sourceCurrencyAmountStr = "1",
             sendToWalletAddress = "1C53cU1oqmqwco38ZawdVQqVemaqa7aWQi", // jerry's mobile wallet address 2
-            transactionHashStr = "10990f1892354ac9f11d634332041f2616e31ceb87fbc9077ac615cdf22c0d51" // test transaction validation
+            transactionHashStr = "" // test transaction validation
         },
         new BitcoinAsset{
             transactionNotes = "Asset 2 purchase",
