@@ -45,7 +45,7 @@ public class BitcoinSDKSimpleGui : MonoBehaviour {
         new BitcoinAsset{
             transactionNotes = "Asset 1 purchase",
             currencyTypeStr = "satoshis",
-            currencyAmountStr = "300000", // in satoshis - overridden by sourceCurrencyAmount when tryping to purchase
+            currencyAmountStr = "300000", // in satoshis - overridden by sourceCurrencyAmount when trying to purchase
             sourceCurrencyTypeStr = "USD",
             sourceCurrencyAmountStr = "1",
             sendToWalletAddress = "1C53cU1oqmqwco38ZawdVQqVemaqa7aWQi", // jerry's mobile wallet address 2
@@ -54,7 +54,7 @@ public class BitcoinSDKSimpleGui : MonoBehaviour {
         new BitcoinAsset{
             transactionNotes = "Asset 2 purchase",
             currencyTypeStr = "satoshis",
-            currencyAmountStr = "0", // in satoshis - overridden by sourceCurrencyAmount when tryping to purchase
+            currencyAmountStr = "0", // in satoshis - overridden by sourceCurrencyAmount when trying to purchase
             sourceCurrencyTypeStr = "USD",
             sourceCurrencyAmountStr = "1",
             sendToWalletAddress = "1GsBUQCNLdphxhuX6aZ7QAJjpnMq8MF6p8", // jerry's donation wallet address 4
@@ -74,9 +74,28 @@ public class BitcoinSDKSimpleGui : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-		
-	}
+        restoreVerifiedTransactionsFromPlayerPrefs();
+    }
 	
+    private void restoreVerifiedTransactionsFromPlayerPrefs()
+    {
+        for (int assetIndex = 0; assetIndex < availableAssets.Length; assetIndex++)
+        {
+            if (PlayerPrefs.HasKey("Asset" + assetIndex))
+            {
+                if (debugLevel > 0) Debug.Log("BitcoinSDKSimpleGui: restore playerprefs asset " + assetIndex);
+
+                string jsonString = PlayerPrefs.GetString("Asset" + assetIndex);
+                BitcoinAsset btcAsset = JsonUtility.FromJson<BitcoinAsset>(jsonString);
+
+                availableAssets[assetIndex] = btcAsset;
+                objectGroups[assetIndex].RawImage_Lock1.GetComponentInChildren<RawImage>().texture = unlockTexture;
+                objectGroups[assetIndex].InputField_Transaction1.GetComponentInChildren<InputField>().text = availableAssets[assetIndex].transactionHashStr;
+            }
+        }
+
+    }
+
 	// Update is called once per frame
 	void Update () {
 		
@@ -171,6 +190,15 @@ public class BitcoinSDKSimpleGui : MonoBehaviour {
         {
             messageLog += "verified " + amount + "\n";
             objectGroups[currentBtcAsset].RawImage_Lock1.GetComponentInChildren<RawImage>().texture = unlockTexture;
+
+            string jsonStr = JsonUtility.ToJson(availableAssets[currentBtcAsset]);
+            messageLog += jsonStr + "\n";
+            
+            PlayerPrefs.SetString("Asset" + currentBtcAsset, jsonStr);
+
+            if (debugLevel > 0) Debug.Log("BitcoinSDKSimpleGui: save playerprefs asset " + currentBtcAsset);
+            messageLog += "BitcoinSDKSimpleGui: save playerprefs asset " + currentBtcAsset;
+
         }
         else
         {
@@ -185,5 +213,11 @@ public class BitcoinSDKSimpleGui : MonoBehaviour {
     {
         messageLog = "";
         LoggingText.GetComponent<Text>().text = messageLog;
+    }
+
+    public void clearPlayerPrefs()
+    {
+        PlayerPrefs.DeleteAll();
+
     }
 }
