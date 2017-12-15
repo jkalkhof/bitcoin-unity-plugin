@@ -27,7 +27,7 @@ public class RequestState
 /// Simplify getting web requests asynchronously
 /// </summary>
 public class CoinbaseWebAsync {
-	private int debugLevel = 0;
+	private int debugLevel = 1;
 	const int TIMEOUT = 10; // seconds
  
 	public bool isResponseCompleted = false;

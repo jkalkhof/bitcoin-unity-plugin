@@ -155,7 +155,8 @@ public class BitcoinIntegration : MonoBehaviour {
             {
                 using (var currentActivity = javaUnityPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
                 {
-					using (var androidPlugin = new AndroidJavaObject("de.schildbach.wallet.integration.android.BitcoinIntegration", currentActivity))                          
+                    //using (var androidPlugin = new AndroidJavaObject("de.schildbach.wallet.integration.android.BitcoinIntegration", currentActivity))                          
+                    using (var androidPlugin = new AndroidJavaObject("com.jerryartist.bitcoin.BitcoinIntegration", currentActivity))
                     {
 						AndroidJavaObject address0 = new AndroidJavaObject("java.lang.String", sendToWalletAddress);
                         //AndroidJavaObject address1 = new AndroidJavaObject("java.lang.String", sendToWalletAddress);
